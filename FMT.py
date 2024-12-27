@@ -110,8 +110,8 @@ if st.button("제출하기"):
     if any(response is None for response in responses.values()):
         st.error("❗ 모든 문항에 반드시 답변해야 합니다.")
     else:
-        # 🧠 하위요소별 점수 계산
-        def calculate_scores(categories):
+          # 🧠 하위요소별 점수 계산
+        def calculate_scores(categories, average=False):
             scores = {}
             for category, items in categories.items():
                 score = 0
@@ -120,23 +120,27 @@ if st.button("제출하기"):
                         score += (6 - responses[item])  # 역채점
                     else:
                         score += responses[item]
-                scores[category] = score
+                if average:
+                    scores[category] = round(score / len(items), 2)  # 평균
+                else:
+                    scores[category] = score  # 합계
             return scores
 
-        # 신앙성숙도 점수 계산
+        # 신앙성숙도 점수 계산 (합계)
         maturity_scores = calculate_scores(MATURITY_CATEGORIES)
-        # 신앙생활 점수 계산
-        lifestyle_scores = calculate_scores(LIFESTYLE_CATEGORIES)
+        # 신앙생활 점수 계산 (평균)
+        lifestyle_scores = calculate_scores(LIFESTYLE_CATEGORIES, average=True)
 
         # 결과 표시
         st.subheader("📝 검사 결과")
 
-        st.write("### 📊 신앙성숙도 하위요소별 점수")
+        st.write("### 📊 신앙성숙도 하위요소별 점수 (합계)")
         for category, score in maturity_scores.items():
-            st.write(f"**{category}:** {score}점 - {MATURITY_DESCRIPTIONS[category]}")
-        st.bar_chart(pd.DataFrame.from_dict(maturity_scores, orient='index', columns=['점수']))
+            st.markdown(f"**{category}**  \n{MATURITY_DESCRIPTIONS[category]}  \n- **점수:** {score}점")
+        st.bar_chart(pd.DataFrame.from_dict(maturity_scores, orient='index', columns=['합계']))
 
-        st.write("### 📊 신앙생활 하위요소별 점수")
+        st.write("### 📊 신앙생활 하위요소별 점수 (평균)")
         for category, score in lifestyle_scores.items():
-            st.write(f"**{category}:** {score}점 - {LIFESTYLE_DESCRIPTIONS[category]}")
-        st.bar_chart(pd.DataFrame.from_dict(lifestyle_scores, orient='index', columns=['점수']))
+            st.markdown(f"**{category}**  \n{LIFESTYLE_DESCRIPTIONS[category]}  \n- **평균 점수:** {score}점")
+        st.bar_chart(pd.DataFrame.from_dict(lifestyle_scores, orient='index', columns=['평균']))
+
