@@ -98,7 +98,7 @@ st.subheader("📋 문항 응답")
 for i in range(1, 46):
     # 문항과 라디오 버튼을 하나의 블록으로 통합
     responses[i] = st.radio(
-        f" {i}: {QUESTIONS_TEXT.get(i, f'문항 {i}')}",
+        f" {i}. {QUESTIONS_TEXT.get(i, f'문항 {i}')}",
         options=[1, 2, 3, 4, 5],
         index=None,  # 초기 선택 없음
         horizontal=True,
